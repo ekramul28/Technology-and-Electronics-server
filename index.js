@@ -11,7 +11,7 @@ app.use(express.json());
 // GekoNRKzninppbct
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = "mongodb+srv://Technology-and-Electronics:GekoNRKzninppbct@cluster0.ktxzlkz.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -33,10 +33,44 @@ async function run() {
             const product = req.body;
             const result = await database.insertOne(product);
             res.send(result);
-        })
+        });
         app.get('/product', async (req, res) => {
             const cursor = await database.find().toArray();
             res.send(cursor);
+        });
+        app.get('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { branName: id };
+            const cursor = await database.find(query).toArray();
+            res.send(cursor);
+        });
+        app.get('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id: new ObjectId(id) };
+            const result = await database.findOne(query);
+            res.send(result)
+
+        });
+        app.put('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const product = req.body;
+            const query = { _id: new ObjectId(id) };
+
+            const options = { upsert: true }
+            const updatePro = {
+                $set: {
+                    name: product.name,
+                    image: product.image,
+                    type: product.type,
+                    price: product.price,
+                    branName: product.branName,
+                    rating: product.rating,
+                    description: product.description
+                }
+            }
+            const result = await database.updateOne(query, updatePro, options);
+            res.send(result);
         })
 
         // Send a ping to confirm a successful connection

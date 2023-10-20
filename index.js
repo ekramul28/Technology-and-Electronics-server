@@ -81,6 +81,13 @@ async function run() {
             }
             const result = await database.updateOne(query, updatePro, options);
             res.send(result);
+        });
+
+        app.delete('/card/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await cardData.deleteOne(query);
+            res.send(result);
         })
 
         // Send a ping to confirm a successful connection
